@@ -16,7 +16,7 @@
 
 CoGCL 是一种基于图对比学习的推荐算法，旨在解决用户行为数据的稀疏性问题。本项目将 CoGCL 从 RecBole 框架完整迁移到了 ReChorus 框架中，并实现了以下核心特性：
 
-*   **向量量化 (Vector Quantization)**: 引入端到端的残差量化机制，学习具有强协同信号的离散编码。
+*   **向量量化**: 引入端到端的残差量化机制，学习具有强协同信号的离散编码。
 *   **智能图增强**: 基于学习到的离散编码，生成可靠的“虚拟邻居”，而非随机扰动。
 *   **多视图对比学习**: 结合结构视图（图增强）和语义视图（语义相关性采样）进行联合优化。
 
@@ -124,7 +124,7 @@ python src/main.py --model_name CoGCL --dataset MovieLens_1M \
 ```bash
 python src/main.py --model_name CoGCL ... --sim_cl_weight 0
 ```
-移除**图增强 (Graph Aug)**:
+移除**图增强**:
 ```bash
 python src/main.py --model_name CoGCL ... --graph_replace_p 0 --graph_add_p 0
 ```
