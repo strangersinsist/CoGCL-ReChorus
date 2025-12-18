@@ -15,6 +15,7 @@ from models.developing import *
 from models.context import *
 from models.context_seq import *
 from models.reranker import *
+from models.CoGCL import *
 from utils import utils
 
 
@@ -161,7 +162,7 @@ if __name__ == '__main__':
                   					for rerankers to select "General" or "Sequential" Baseranker.')
 	init_args, init_extras = init_parser.parse_known_args()
 	
-	model_name = eval('{0}.{0}{1}'.format(init_args.model_name,init_args.model_mode))
+	model_name = eval('{0}{1}'.format(init_args.model_name,init_args.model_mode))
 	reader_name = eval('{0}.{0}'.format(model_name.reader))  # model chooses the reader
 	runner_name = eval('{0}.{0}'.format(model_name.runner))  # model chooses the runner
 

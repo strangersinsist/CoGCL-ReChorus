@@ -201,7 +201,7 @@ class BaseRunner(object):
 				restored_prediction[torch.arange(item_ids.shape[0]).unsqueeze(-1), indices] = prediction   
 				out_dict['prediction'] = restored_prediction
 
-			loss = model.loss(out_dict)
+			loss = model.loss(out_dict, batch)
 			loss.backward()
 			model.optimizer.step()
 			loss_lst.append(loss.detach().cpu().data.numpy())

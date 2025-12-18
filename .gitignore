@@ -8,3 +8,7 @@ figure/
 doc/
 model/
 search.py
+data/Grocery_and_Gourmet_Food/*.pkl
+data/MovieLens_1M
+.vscode
+results
