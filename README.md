@@ -10,7 +10,7 @@
 
 本项目基于 [ReChorus 2.0](https://github.com/THUwangcy/ReChorus) 框架，成功复现了 **CoGCL (Contrastive Graph Collaborative Learning)** 模型。
 
-> 原始论文: [Enhancing Graph Contrastive Learning with Reliable and Informative Augmentation for Recommendation](https://dl.acm.org/doi/10.1145/3477495.3532029)
+> 原始论文: [Enhancing Graph Contrastive Learning with Reliable and Informative Augmentation for Recommendation](https://dl.acm.org/doi/10.1145/3690624.3709214)
 
 ## 项目简介
 
@@ -89,7 +89,7 @@ python run_optuna.py \
 #### 3.2 复现最佳结果
 基于我们的搜索结果，使用以下命令可直接复现报告中的性能。
 
-**Grocery_and_Gourmet_Food (稀疏场景)**:
+**Grocery_and_Gourmet_Food**:
 ```bash
 python src/main.py --model_name CoGCL --dataset Grocery_and_Gourmet_Food \
       --vq_loss_weight 0.008 \
@@ -104,7 +104,7 @@ python src/main.py --model_name CoGCL --dataset Grocery_and_Gourmet_Food \
       --cl_tau 0.47
 ```
 
-**MovieLens-1M (密集场景)**:
+**MovieLens-1M**:
 ```bash
 python src/main.py --model_name CoGCL --dataset MovieLens_1M \
       --vq_loss_weight 0.00179 \
