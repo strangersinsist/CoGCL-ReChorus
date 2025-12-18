@@ -1,76 +1,138 @@
 ![logo](./docs/_static/logo2.0.png)
 ---
 
-![PyPI - Python Version](https://img.shields.io/badge/pyhton-3.10-blue) 
+![PyPI - Python Version](https://img.shields.io/badge/pyhton-3.10-blue)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
-![GitHub repo size](https://img.shields.io/github/repo-size/THUwangcy/ReChorus) 
+![GitHub repo size](https://img.shields.io/github/repo-size/THUwangcy/ReChorus)
 [![arXiv](https://img.shields.io/badge/arXiv-ReChorus-%23B21B1B)](https://arxiv.org/abs/2405.18058)
 
+# ReChorus - CoGCL 模型复现版本
 
-ReChorus2.0 is a modular and task-flexible PyTorch library for recommendation, especially for research purpose. It aims to provide researchers a flexible framework to implement various recommendation tasks, compare different algorithms, and adapt to diverse and highly-customized data inputs. We hope ReChorus2.0 can serve as a more convinient and user-friendly tool for researchers, so as to form a "Chorus" of recommendation tasks and algorithms.
+本项目基于 [ReChorus 2.0](https://github.com/THUwangcy/ReChorus) 框架，成功复现了 **CoGCL (Contrastive Graph Collaborative Learning)** 模型。
 
-The previous version of ReChorus can be found at [ReChorus1.0](https://github.com/THUwangcy/ReChorus/tree/ReChorus1.0)
+> 原始论文: [Enhancing Graph Contrastive Learning with Reliable and Informative Augmentation for Recommendation](https://dl.acm.org/doi/10.1145/3477495.3532029)
 
-## What's New in ReChorus2.0:
+## 项目简介
 
-- **New Tasks**: Newly supporting the context-aware top-k recommendation and CTR prediction task. Newly supporting the Impression-based re-ranking task.
-- **New Models**: Adding Context-aware Recommenders and Impression-based Re-ranking Models. Listed below.
-- **New dataset format**: Supporting various contextual feature input. Customizing candidate item lists in training and evaluation. Supporting variable length positive and negative samples.
-- **Task Flexible**: Each model can serve for different tasks, and task switching is conveniently achieved by altering *model mode*.
-  
+CoGCL 是一种基于图对比学习的推荐算法，旨在解决用户行为数据的稀疏性问题。本项目将 CoGCL 从 RecBole 框架完整迁移到了 ReChorus 框架中，并实现了以下核心特性：
 
-This framework is especially suitable for researchers to choose or implement desired experimental settings, and compare algorithms under the same setting. The characteristics of our framework can be summarized as follows:
-
-- **Modular**: primary functions modularized into distinct components: runner, model, and reader, facilitating code comprehension and integration of new features.
-  
-- **Swift**: concentrate on your model design ***in a single file*** and implement new models quickly.
-
-- **Efficient**: multi-thread batch preparation, special implementations for the evaluation, and around 90% GPU utilization during training for deep models.
-
-- **Flexible**: implement new readers or runners for different datasets and experimental settings, and each model can be assigned with specific helpers.
-
-## Structure
-
-Generally, ReChorus decomposes the whole process into three modules:
-
-- [Reader](https://github.com/THUwangcy/ReChorus/tree/master/src/helpers/BaseReader.py): read dataset into DataFrame and append necessary information to each instance
-- [Runner](https://github.com/THUwangcy/ReChorus/tree/master/src/helpers/BaseRunner.py): control the training process and model evaluation, including evaluation metrics.
-- [Model](https://github.com/THUwangcy/ReChorus/tree/master/src/models/BaseModel.py): define how to generate output (predicted labels or ranking scores) and prepare batches.
-
-![logo](./docs/_static/module_new.png)
-
-## Requirements & Getting Started
-See in the doc for [Requirements & Getting Started](https://github.com/THUwangcy/ReChorus/tree/master/docs/Getting_Started.md).
-
-## Tasks & Settings
-
-The tasks & settings are listed below
-
-<table>
-<tr><th> Tasks </th><th> Runner </th><th> Metrics </th><th> Loss Functions</th><th> Reader </th><th> BaseModel </th><th> Models</th><th> Model Modes </th></tr>
-<tr><td rowspan="3"> Top-k Recommendation </td><td rowspan="3"> BaseRunner </td><td rowspan="3"> HitRate NDCG </td><td rowspan="3"> BPR </td><td> BaseReader </td><td> BaseModel.GeneralModel </td><td> general </td><td> '' </td></tr>
-<tr><td> SeqReader </td><td> BaseModel.SequentialModel </td><td> sequential </td><td> '' </td></tr>
-<tr><td> ContextReader </td><td> BaseContextModel.ContextModel </td><td> context </td><td> 'TopK' </td></tr>
-<tr><td> CTR Prediction </td><td> CTRRunner </td><td> AUC Logloss </td><td> BPR, BCE </td><td> ContextReader </td><td> BaseContextModel.ContextCTRModel </td><td> context </td><td> 'CTR' </td></tr>
-<tr><td rowspan="4"> Impression-based Ranking </td><td rowspan="4"> ImpressionRunner </td><td rowspan="4"> HitRate NDCG MAP </td><td rowspan="4"> List-level BPR, Listnet loss, Softmax cross entropy loss, Attention rank </td><td> ImpressionReader </td><td> BaseImpressionModel.ImpressionModel </td><td> general </td><td> 'Impression' </td></tr>
-<tr><td> ImpressionSeqReader </td><td> BaseImpressionModel.ImpressionSeqModel </td><td> sequential </td><td> 'Impression' </td></tr>
-<tr><td> ImpressionReader </td><td> BaseRerankerModel.RerankModel </td><td> reranker </td><td> 'General' </td></tr>
-<tr><td> ImpressionSeqReader </td><td> BaseRerankerModel.RerankSeqModel </td><td> reranker </td><td> 'Sequential' </td></tr>
-</table>
+*   **向量量化 (Vector Quantization)**: 引入端到端的残差量化机制，学习具有强协同信号的离散编码。
+*   **智能图增强**: 基于学习到的离散编码，生成可靠的“虚拟邻居”，而非随机扰动。
+*   **多视图对比学习**: 结合结构视图（图增强）和语义视图（语义相关性采样）进行联合优化。
 
 
-## Arguments
-See in the doc for [Main Arguments](https://github.com/THUwangcy/ReChorus/tree/master/docs/Main_Arguments.md).
+## 实验结果
 
-## Models
-See in the doc for [Supported Models](https://github.com/THUwangcy/ReChorus/tree/master/docs/Supported_Models.md).
-
-Experimental results and corresponding configurations are shown in [Demo Script Results](https://github.com/THUwangcy/ReChorus/tree/master/docs/demo_scripts_results/README.md).
+我们在 **Grocery_and_Gourmet_Food** 和 **MovieLens-1M**两个数据集上进行了对比实验。
 
 
-## Citation
+### 性能对比 
 
-**If you find ReChorus is helpful to your research, please cite either of the following papers. Thanks!**
+**Grocery_and_Gourmet_Food 数据集**
+
+| 模型        | HR@5       | NDCG@5     | HR@10      | NDCG@10    | HR@20      | NDCG@20    |
+| ----------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- |
+| BPRMF       | 0.3191     | 0.2195     | 0.4222     | 0.2529     | 0.5304     | 0.2801     |
+| LightGCN    | 0.3710     | 0.2566     | 0.4925     | 0.2961     | 0.6132     | 0.3266     |
+| CoGCL| **0.4000** | **0.2799** | **0.5158** | **0.3175** | **0.6281** | **0.3459** |
+
+**MovieLens-1M 数据集**
+
+| 模型        | HR@5       | NDCG@5     | HR@10      | NDCG@10    | HR@20      | NDCG@20    |
+| ----------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- |
+| **BPRMF**   | **0.3764** | 0.2515     | **0.5516** | 0.3081     | 0.7146     | 0.3422     |
+| LightGCN    | 0.3702     | 0.2477     | 0.5356     | 0.3008     | 0.6887     | 0.3409     |
+| CoGCL | 0.3761     | **0.2580** | 0.5495     | **0.3138** | **0.7400** | **0.3621** |
+
+
+## 快速开始
+
+### 1. 环境准备
+确保安装 PyTorch 和 PyTorch Geometric。
+```bash
+pip install -r requirements.txt
+# 额外依赖
+pip install torch-geometric
+```
+
+### 2. 数据准备
+使用本项目提供的脚本预处理 MovieLens-1M 数据：
+```bash
+python data/MovieLens-1M/prepare_movielens.py
+```
+
+### 3. 实验运行指南
+
+#### 3.1 超参数搜索
+本项目使用 `Optuna` 框架进行自动化超参数搜索。
+
+**Grocery_and_Gourmet_Food**:
+```bash
+python run_optuna.py \
+    --model_name CoGCL \
+    --dataset Grocery_and_Gourmet_Food \
+    --n_trials 100 \
+    --epoch 100 \
+    --gpu 0 
+```
+
+**MovieLens-1M**:
+```bash
+python run_optuna.py \
+    --model_name CoGCL \
+    --dataset MovieLens_1M \
+    --n_trials 100 \
+    --epoch 100 \
+    --gpu 0 
+```
+
+#### 3.2 复现最佳结果
+基于我们的搜索结果，使用以下命令可直接复现报告中的性能。
+
+**Grocery_and_Gourmet_Food (稀疏场景)**:
+```bash
+python src/main.py --model_name CoGCL --dataset Grocery_and_Gourmet_Food \
+      --vq_loss_weight 0.008 \
+      --cl_weight 0.03 \
+      --sim_cl_weight 0.5 \
+      --graph_replace_p 0.42 \
+      --graph_add_p 0.44 \
+      --drop_p 0.05 \
+      --n_layers 1 \
+      --lr 0.0033 \
+      --l2 4e-6 \
+      --cl_tau 0.47
+```
+
+**MovieLens-1M (密集场景)**:
+```bash
+python src/main.py --model_name CoGCL --dataset MovieLens_1M \
+      --vq_loss_weight 0.00179 \
+      --cl_weight 0.0130 \
+      --sim_cl_weight 0.877 \
+      --graph_replace_p 0.0735 \
+      --graph_add_p 0.378 \
+      --drop_p 0.455 \
+      --n_layers 4 \
+      --lr 0.00101 \
+      --l2 1.14e-07 \
+      --cl_tau 0.270
+```
+
+#### 3.3 消融实验
+可以通过将相关权重或概率设为 0 来进行消融实验。例如，移除**相似性对比学习 (SimCL)**:
+```bash
+python src/main.py --model_name CoGCL ... --sim_cl_weight 0
+```
+移除**图增强 (Graph Aug)**:
+```bash
+python src/main.py --model_name CoGCL ... --graph_replace_p 0 --graph_add_p 0
+```
+
+
+## 原始 ReChorus 引用
+
+ReChorus 是一个模块化、任务灵活的推荐算法库。
 
 ```
 @inproceedings{li2024rechorus2,
@@ -81,74 +143,5 @@ Experimental results and corresponding configurations are shown in [Demo Script 
   year={2024}
 }
 ```
-```
-@inproceedings{wang2020make,
-  title={Make it a chorus: knowledge-and time-aware item modeling for sequential recommendation},
-  author={Wang, Chenyang and Zhang, Min and Ma, Weizhi and Liu, Yiqun and Ma, Shaoping},
-  booktitle={Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval},
-  pages={109--118},
-  year={2020}
-}
-```
-```
-@article{王晨阳2021rechorus,
-  title={ReChorus: 一个综合, 高效, 易扩展的轻量级推荐算法框架},
-  author={王晨阳 and 任一 and 马为之 and 张敏 and 刘奕群 and 马少平},
-  journal={软件学报},
-  volume={33},
-  number={4},
-  pages={0--0},
-  year={2021}
-}
-```
 
-This is also our public implementation for the following papers (codes and datasets to reproduce the results can be found at corresponding branch):
-
-
-- *Chenyang Wang, Min Zhang, Weizhi Ma, Yiqun Liu, and Shaoping Ma. [Make It a Chorus: Knowledge- and Time-aware Item Modeling for Sequential Recommendation](http://www.thuir.cn/group/~mzhang/publications/SIGIR2020Wangcy.pdf). In SIGIR'20.*
-
-```bash
-git clone -b SIGIR20 https://github.com/THUwangcy/ReChorus.git
-```
-
-- *Chenyang Wang, Weizhi Ma, Min Zhang, Chong Chen, Yiqun Liu, and Shaoping Ma. [Towards Dynamic User Intention: Temporal Evolutionary Effects of Item Relations in Sequential Recommendation](https://chenchongthu.github.io/files/TOIS-KDA-wcy.pdf). In TOIS'21.*
-
-```bash
-git clone -b TOIS21 https://github.com/THUwangcy/ReChorus.git
-```
-
-- *Chenyang Wang, Weizhi Ma, Chong, Chen, Min Zhang, Yiqun Liu, and Shaoping Ma. [Sequential Recommendation with Multiple Contrast Signals](https://dl.acm.org/doi/pdf/10.1145/3522673). In TOIS'22.*
-
-```bash
-git clone -b TOIS22 https://github.com/THUwangcy/ReChorus.git
-```
-
-- *Chenyang Wang, Zhefan Wang, Yankai Liu, Yang Ge, Weizhi Ma, Min Zhang, Yiqun Liu, Junlan Feng, Chao Deng, and Shaoping Ma. [Target Interest Distillation for Multi-Interest Recommendation](). In CIKM'22.*
-
-```bash
-git clone -b CIKM22 https://github.com/THUwangcy/ReChorus.git
-```
-
-## Contact
-
-**ReChorus 1.0**: Chenyang Wang (THUwangcy@gmail.com)
-
-**ReChorus 2.0**: Jiayu Li (lijiayu997@gmail.com), Hanyu Li (l-hy12@outlook.com)
-
-<!-- MARKDOWN LINKS & IMAGES -->
-
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=flat-square
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=flat-square
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=flat-square
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=flat-square
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=flat-square
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
+更多关于 ReChorus 的文档请参考 [Wiki](https://github.com/THUwangcy/ReChorus/tree/master/docs)。
