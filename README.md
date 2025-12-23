@@ -159,7 +159,32 @@ python src/main.py --model_name CoGCL --dataset Grocery_and_Gourmet_Food \
     --code_mix_alpha 0.0159
 ```
 
-MovieLens-1M等其他数据集可以用我们提供的超参数搜索脚本找到最优超参数。
+#### 4.3 QER 超参数搜索
+
+使用 `alpha_optuna.py` 脚本可以专门搜索 `code_mix_alpha` 参数的最优值。该脚本会固定其他超参数为最优值，只搜索 QER 融合系数。
+
+**Grocery_and_Gourmet_Food**:
+```bash
+python src/alpha_optuna.py \
+    --model_name CoGCL \
+    --dataset Grocery_and_Gourmet_Food \
+    --n_trials 100 \
+    --storage ../results/optuna_CoGCL_Grocery_and_Gourmet_Food_alpha.db
+```
+
+**MovieLens-1M**:
+```bash
+python src/alpha_optuna.py \
+    --model_name CoGCL \
+    --dataset MovieLens_1M \
+    --n_trials 100 \
+    --storage ../results/optuna_CoGCL_MovieLens_1M_alpha.db
+```
+
+搜索完成后，可以使用 Optuna Dashboard 可视化结果：
+```bash
+optuna-dashboard ../results/optuna_CoGCL_Grocery_and_Gourmet_Food_alpha.db
+```
 
 
 ## 原始 ReChorus 引用
