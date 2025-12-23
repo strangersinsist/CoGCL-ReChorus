@@ -41,7 +41,8 @@ from models.developing import *
 from models.context import *
 from models.context_seq import *
 from models.reranker import *
-from models.CoGCL import *
+# CoGCL 动态导入：根据 code_mix_alpha 参数选择模型版本
+# 在 main() 函数中动态导入
 from utils import utils
 
 
@@ -78,6 +79,10 @@ def parse_args():
     
     # Output settings
     parser.add_argument('--output_dir', type=str, default='../results/', help='Output directory')
+    
+    # QER (Quantization-Enhanced Representation) settings
+    parser.add_argument('--code_mix_alpha', type=float, default=0.0,
+                        help='QER fusion coefficient. If !=0, use CoGCL_new.py; if ==0, use CoGCL.py')
     
     return parser.parse_args()
 
@@ -371,6 +376,15 @@ def main():
     
     # Set random seed
     utils.init_seed(args.random_seed)
+    
+    # 动态导入 CoGCL 模型：根据 code_mix_alpha 参数选择版本
+    if args.model_name == 'CoGCL':
+        if args.code_mix_alpha != 0:
+            from models.CoGCL_new import CoGCL
+            logging.info(f"Using CoGCL_new.py (QER enabled, code_mix_alpha={args.code_mix_alpha})")
+        else:
+            from models.CoGCL import CoGCL
+            logging.info("Using CoGCL.py (Original, code_mix_alpha=0)")
     
     # Load model class
     model_class = eval(args.model_name)

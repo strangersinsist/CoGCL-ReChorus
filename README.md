@@ -8,7 +8,7 @@
 
 # ReChorus - CoGCL 模型复现版本
 
-本项目基于 [ReChorus 2.0](https://github.com/THUwangcy/ReChorus) 框架，成功复现了 **CoGCL (Contrastive Graph Collaborative Learning)** 模型。
+本项目基于 [ReChorus 2.0](https://github.com/THUwangcy/ReChorus) 框架，成功复现了 **CoGCL (Contrastive Graph Collaborative Learning)** 模型。并实现了 **QER (量化增强表示)** 作为 CoGCL 的改进功能。
 
 > 原始论文: [Enhancing Graph Contrastive Learning with Reliable and Informative Augmentation for Recommendation](https://dl.acm.org/doi/10.1145/3690624.3709214)
 
@@ -30,19 +30,19 @@ CoGCL 是一种基于图对比学习的推荐算法，旨在解决用户行为�
 
 **Grocery_and_Gourmet_Food 数据集**
 
-| 模型        | HR@5       | NDCG@5     | HR@10      | NDCG@10    | HR@20      | NDCG@20    |
-| ----------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- |
-| BPRMF       | 0.3191     | 0.2195     | 0.4222     | 0.2529     | 0.5304     | 0.2801     |
-| LightGCN    | 0.3710     | 0.2566     | 0.4925     | 0.2961     | 0.6132     | 0.3266     |
-| CoGCL| **0.4000** | **0.2799** | **0.5158** | **0.3175** | **0.6281** | **0.3459** |
+| 模型        | HR@5       | NDCG@5     | HR@10      | NDCG@10    | HR@20      | NDCG@20    |HR@50    |NDCG@50    |
+| ----------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- |---------- |---------- |
+| BPRMF       | 0.3191     | 0.2195     | 0.4222     | 0.2529     | 0.5304     | 0.2801     |0.7412     |0.3216    |
+| LightGCN    | 0.3710     | 0.2566     | 0.4925     | 0.2961     | 0.6132     | 0.3266     |0.8187    |0.3671    |
+| CoGCL | **0.4000** | **0.2799** | **0.5158** | **0.3175** | **0.6281** | **0.3459** |**0.8196** |**0.3837** |
 
 **MovieLens-1M 数据集**
 
-| 模型        | HR@5       | NDCG@5     | HR@10      | NDCG@10    | HR@20      | NDCG@20    |
-| ----------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- |
-| **BPRMF**   | **0.3764** | 0.2515     | **0.5516** | 0.3081     | 0.7146     | 0.3422     |
-| LightGCN    | 0.3702     | 0.2477     | 0.5356     | 0.3008     | 0.6887     | 0.3409     |
-| CoGCL | 0.3761     | **0.2580** | 0.5495     | **0.3138** | **0.7400** | **0.3621** |
+| 模型        | HR@5       | NDCG@5     | HR@10      | NDCG@10    | HR@20      | NDCG@20    |HR@50    |NDCG@50    |
+| ----------- | ---------- | ---------- | ---------- | ---------- | ---------- | ---------- |---------- |---------- |
+| **BPRMF**   | **0.3764** | 0.2515     | **0.5516** | 0.3081     | 0.7146     | 0.3422     |**0.9493**    |0.3977    |
+| LightGCN    | 0.3702     | 0.2477     | 0.5356     | 0.3008     | 0.6887     | 0.3409     |0.8989    |0.3781    |
+| CoGCL | 0.3761     | **0.2580** | 0.5495     | **0.3138** | **0.7400** | **0.3621** |0.9465   |**0.4035**  |
 
 
 ## 快速开始
@@ -128,6 +128,38 @@ python src/main.py --model_name CoGCL ... --sim_cl_weight 0
 ```bash
 python src/main.py --model_name CoGCL ... --graph_replace_p 0 --graph_add_p 0
 ```
+
+### 4. QER 改进版本
+本项目实现了 **QER (量化增强表示)** 作为 CoGCL 的改进功能。QER 将量化后的码本嵌入融合到 GCN 输出中，利用全局语义信息优化局部表示。
+
+#### 4.1 模型版本选择
+
+通过 `--code_mix_alpha` 参数控制使用哪个版本：
+
+| `code_mix_alpha` 值 | 使用的模型文件 | 说明 |
+| --- | --- | --- |
+| `= 0` (默认) | `models/CoGCL.py` | 原始 CoGCL 实现 |
+| `!= 0` | `models/CoGCL_new.py` | 带 QER 增强的改进版本 |
+
+#### 4.2 运行 QER 增强版本
+
+以**Grocery_and_Gourmet_Food**为例，运行 QER 增强版本:
+```bash
+python src/main.py --model_name CoGCL --dataset Grocery_and_Gourmet_Food \
+    --vq_loss_weight 0.008 \
+    --cl_weight 0.03 \
+    --sim_cl_weight 0.5 \
+    --graph_replace_p 0.42 \
+    --graph_add_p 0.44 \
+    --drop_p 0.05 \
+    --n_layers 1 \
+    --lr 0.0033 \
+    --l2 4e-6 \
+    --cl_tau 0.47 \
+    --code_mix_alpha 0.0159
+```
+
+MovieLens-1M等其他数据集可以用我们提供的超参数搜索脚本找到最优超参数。
 
 
 ## 原始 ReChorus 引用

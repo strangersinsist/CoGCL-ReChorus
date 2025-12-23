@@ -15,7 +15,8 @@ from models.developing import *
 from models.context import *
 from models.context_seq import *
 from models.reranker import *
-from models.CoGCL import *
+# CoGCL 动态导入：根据 code_mix_alpha 参数选择模型
+# 在后续代码中根据参数动态导入
 from utils import utils
 
 
@@ -161,6 +162,22 @@ if __name__ == '__main__':
             						for general/seq models to select Normal (no suffix, model_mode="") or "Impression" setting;\
                   					for rerankers to select "General" or "Sequential" Baseranker.')
 	init_args, init_extras = init_parser.parse_known_args()
+	
+	# 动态导入 CoGCL 模型：根据 code_mix_alpha 参数选择版本
+	# code_mix_alpha != 0 时使用 CoGCL_new.py (带 QER)
+	# code_mix_alpha == 0 时使用 CoGCL.py (原始版本)
+	if init_args.model_name == 'CoGCL':
+		# 预解析 code_mix_alpha 参数
+		alpha_parser = argparse.ArgumentParser(add_help=False)
+		alpha_parser.add_argument('--code_mix_alpha', type=float, default=0.0)
+		alpha_args, _ = alpha_parser.parse_known_args()
+		
+		if alpha_args.code_mix_alpha != 0:
+			from models.CoGCL_new import CoGCL
+			print(f"[INFO] Using CoGCL_new.py (QER enabled, code_mix_alpha={alpha_args.code_mix_alpha})")
+		else:
+			from models.CoGCL import CoGCL
+			print("[INFO] Using CoGCL.py (Original, code_mix_alpha=0)")
 	
 	model_name = eval('{0}{1}'.format(init_args.model_name,init_args.model_mode))
 	reader_name = eval('{0}.{0}'.format(model_name.reader))  # model chooses the reader
