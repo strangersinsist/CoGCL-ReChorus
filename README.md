@@ -46,6 +46,7 @@ CoGCL 是一种基于图对比学习的推荐算法，旨在解决用户行为�
 
 
 ## 快速开始
+我们的实验运行环境为Ubuntu 22.04, cuda11.8, 使用一张4060Ti 16GB显卡。
 
 ### 1. 环境准备
 确保安装 PyTorch 和 PyTorch Geometric。
