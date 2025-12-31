@@ -50,6 +50,7 @@ CoGCL 是一种基于图对比学习的推荐算法，旨在解决用户行为�
 
 ### 1. 环境准备
 确保安装 PyTorch 和 PyTorch Geometric。
+这里的requirements.txt是原始项目自带，如果冲突可以不要指定版本的包。
 ```bash
 pip install -r requirements.txt
 # 额外依赖
@@ -66,6 +67,7 @@ python data/MovieLens-1M/prepare_movielens.py
 
 #### 3.1 超参数搜索
 本项目使用 `Optuna` 框架进行自动化超参数搜索。
+！如果要运行optuna的代码请自行再安装`optuna`和`optuna-dashboard`
 
 **Grocery_and_Gourmet_Food**:
 ```bash
